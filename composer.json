@@ -1,0 +1,13 @@
+{
+	"name": "carlomanf/mcast",
+	"description": "The Multicommerce AST compiler.",
+	"support": {
+		"issues": "https://github.com/carlomanf/mcast/issues",
+		"source": "https://github.com/carlomanf/mcast"
+	},
+	"autoload": {
+		"psr-4": {
+			"MCAST\\": "src/"
+		}
+	}
+}

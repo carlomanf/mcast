@@ -100,7 +100,7 @@ class Compiler
 	 */
 	public function compile(): string
 	{
-		$frame = new Frame( array(), array() );
+		$frame = new Frame();
 
 		$this->definition = new Definition();
 		$this->definition->attrs = array( 'symbol' => 'main', 'params' => array_keys( $this->context ) );
@@ -110,8 +110,19 @@ class Compiler
 		$this->definition = $this->definition->optimise( $this, $frame );
 
 		$this->evaluation = new Evaluation();
-		$this->evaluation->attrs = array( 'symbol' => 'main', 'params' => array_values( $this->context ) );
-		$this->evaluation->subnodes = array();
+		$this->evaluation->attrs = array( 'symbol' => 'main' );
+		$subnodes = array();
+
+		foreach ( $this->context as $symbol => $value )
+		{
+			$assignment = new Assignment();
+			$assignment->attrs = array( 'symbol' => $symbol, 'value' => $value );
+			$assignment->subnodes = array();
+			$assignment->content = array();
+			$subnodes[] = $assignment;
+		}
+
+		$this->evaluation->subnodes = $subnodes;
 		$this->evaluation->content = array();
 
 		$this->evaluation = $this->evaluation->optimise( $this, $frame );

@@ -17,7 +17,7 @@ final class Frame
 	 * @since 0.1.0
 	 * @var array
 	 */
-	private $assignments;
+	private $assignments = array();
 
 	/**
 	 * Definitions in this frame.
@@ -27,7 +27,17 @@ final class Frame
 	 * @since 0.1.0
 	 * @var array
 	 */
-	private $definitions;
+	private $definitions = array();
+
+	/**
+	 * Parent frame, if provided through the constructor.
+	 *
+	 * @access private
+	 *
+	 * @since 0.1.1
+	 * @var Frame|null
+	 */
+	private $parent = null;
 
 	/**
 	 * Returns an assignment from this frame given its symbol.
@@ -35,10 +45,19 @@ final class Frame
 	 * @since 0.1.0
 	 *
 	 * @param string $symbol The symbol to look up.
+	 *
+	 * @return Assignment|null The assignment if this symbol exists in the frame, null if not.
 	 */
 	public function get_assignment( string $symbol )
 	{
-		return isset( $this->assignments[ $symbol ] ) ? $this->assignments[ $symbol ] : null;
+		if ( isset( $this->assignments[ $symbol ] ) )
+		{
+			return $this->assignments[ $symbol ];
+		}
+		else
+		{
+			return isset( $this->parent ) ? $this->parent->get_assignment( $symbol ) : null;
+		}
 	}
 
 	/**
@@ -47,10 +66,32 @@ final class Frame
 	 * @since 0.1.0
 	 *
 	 * @param string $symbol The symbol to look up.
+	 *
+	 * @return Definition|null The definition if this symbol exists in the frame, null if not.
 	 */
 	public function get_definition( string $symbol )
 	{
-		return isset( $this->definitions[ $symbol ] ) ? $this->definitions[ $symbol ] : null;
+		if ( isset( $this->definitions[ $symbol ] ) )
+		{
+			return $this->definitions[ $symbol ];
+		}
+		else
+		{
+			return isset( $this->parent ) ? $this->parent->get_definition( $symbol ) : null;
+		}
+	}
+
+	/**
+	 * Adds an assignment to this frame.
+	 *
+	 * @since 0.1.1
+	 *
+	 * @param string $symbol The symbol for this assignment.
+	 * @param Assignment $assignment The assignment.
+	 */
+	public function add_assignment( string $symbol, Assignment $assignment )
+	{
+		$this->assignments[ $symbol ] = $assignment;
 	}
 
 	/**
@@ -70,14 +111,12 @@ final class Frame
 	 * Constructor.
 	 *
 	 * @since 0.1.0
+	 * @since 0.1.1 Removed $assignments and $definitions parameters.
 	 *
-	 * @param array $assignments Assignments for this frame.
-	 * @param array $definitions Definitions for this frame.
 	 * @param Frame|null $parent Optional parent frame.
 	 */
-	public function __construct( array $assignments, array $definitions, Frame $parent = null )
+	public function __construct( Frame $parent = null )
 	{
-		$this->assignments = isset( $parent ) ? array_merge( $parent->assignments, $assignments ) : $assignments;
-		$this->definitions = isset( $parent ) ? array_merge( $parent->definitions, $definitions ) : $definitions;
+		$this->parent = $parent;
 	}
 }

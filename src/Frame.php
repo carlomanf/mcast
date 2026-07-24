@@ -91,7 +91,10 @@ final class Frame
 	 */
 	public function add_assignment( string $symbol, Assignment $assignment )
 	{
-		$this->assignments[ $symbol ] = $assignment;
+		if ( count( (array) $assignment->subnodes ) === 1 )
+		{
+			$this->assignments[ $symbol ] = $assignment;
+		}
 	}
 
 	/**

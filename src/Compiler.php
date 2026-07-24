@@ -115,10 +115,24 @@ class Compiler
 
 		foreach ( $this->context as $symbol => $value )
 		{
+			$output = new Output();
+			$output->attrs = array();
+
+			if ( is_array( $value ) )
+			{
+				$output->subnodes = $value;
+				$output->content = array_fill( 0, count( $value ), null );
+			}
+			else
+			{
+				$output->subnodes = array();
+				$output->content = array( (string) $value );
+			}
+
 			$assignment = new Assignment();
-			$assignment->attrs = array( 'symbol' => $symbol, 'value' => $value );
-			$assignment->subnodes = array();
-			$assignment->content = array();
+			$assignment->attrs = array( 'symbol' => $symbol );
+			$assignment->subnodes = array( $output );
+			$assignment->content = array( null );
 			$subnodes[] = $assignment;
 		}
 

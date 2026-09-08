@@ -32,11 +32,13 @@ class Evaluation extends Node
 	public function optimise( Compiler $compiler, Frame $frame ): Node
 	{
 		$evaluation = $this;
-		$definition = $frame->get_definition( (string) $this->symbol );
 
-		if ( isset( $definition ) )
+		$definition = $frame->get_definition( (string) $this->symbol );
+		$definition_frame = $frame->get_definition_frame( (string) $this->symbol );
+
+		if ( isset( $definition ) && isset( $definition_frame ) )
 		{
-			$subframe = new Frame( $definition->frame );
+			$subframe = new Frame( $definition_frame );
 			$params = (array) $definition->params;
 
 			$evaluation = new Evaluation();
@@ -44,7 +46,7 @@ class Evaluation extends Node
 			$evaluation->attrs = $this->attrs;
 			$subnodes = array();
 
-			foreach ( $this->subnodes as $key => &$assignment )
+			foreach ( $this->subnodes as $key => $assignment )
 			{
 				if ( isset( $params[ $key ] ) && $params[ $key ] === (string) $assignment->symbol )
 				{

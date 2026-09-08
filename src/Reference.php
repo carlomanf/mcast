@@ -15,7 +15,7 @@ class Reference extends Node
 	 * @access private
 	 *
 	 * @since 0.1.1
-	 * @var Node
+	 * @var Node|null
 	 */
 	private $value;
 
@@ -31,14 +31,20 @@ class Reference extends Node
 	 */
 	public function optimise( Compiler $compiler, Frame $frame ): Node
 	{
+		$reference = $this;
 		$assignment = $frame->get_assignment( (string) $this->symbol );
 
 		if ( isset( $assignment ) )
 		{
-			$this->value = $assignment->subnodes[0]->optimise( $compiler, $frame );
+			$reference = new Reference();
+			$reference->name = $this->name;
+			$reference->attrs = $this->attrs;
+			$reference->subnodes = $this->subnodes;
+			$reference->content = $this->content;
+			$reference->value = $assignment->subnodes[0]->optimise( $compiler, $frame );
 		}
 
-		return $this;
+		return $reference;
 	}
 
 	/**

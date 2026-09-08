@@ -82,6 +82,27 @@ final class Frame
 	}
 
 	/**
+	 * Returns a definition's frame given its symbol.
+	 *
+	 * @since 0.1.2
+	 *
+	 * @param string $symbol The symbol to look up.
+	 *
+	 * @return Frame|null The definition's frame if this symbol exists in the frame, null if not.
+	 */
+	public function get_definition_frame( string $symbol )
+	{
+		if ( isset( $this->definitions[ $symbol ] ) )
+		{
+			return $this;
+		}
+		else
+		{
+			return isset( $this->parent ) ? $this->parent->get_definition_frame( $symbol ) : null;
+		}
+	}
+
+	/**
 	 * Adds an assignment to this frame.
 	 *
 	 * @since 0.1.1
@@ -101,13 +122,17 @@ final class Frame
 	 * Adds a definition to this frame.
 	 *
 	 * @since 0.1.0
+	 * @since 0.1.2 Definitions are now immutable.
 	 *
 	 * @param string $symbol The symbol for this definition.
 	 * @param Definition $definition The definition.
 	 */
 	public function add_definition( string $symbol, Definition $definition )
 	{
-		$this->definitions[ $symbol ] = $definition;
+		if ( !isset( $this->definitions[ $symbol ] ) )
+		{
+			$this->definitions[ $symbol ] = $definition;
+		}
 	}
 
 	/**
